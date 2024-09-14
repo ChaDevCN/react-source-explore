@@ -1,0 +1,23 @@
+{
+	"name": "react-source-explore",
+	"description": "react实现",
+	"scripts": {
+		"lint": "eslint --ext .ts,.jsx,.tsx --fix --quiet ./packages"
+	},
+	"author": "Charlie <charlie.l1u@outlook.com>",
+	"devDependencies": {
+		"@commitlint/cli": "^19.5.0",
+		"@commitlint/config-conventional": "^19.5.0",
+		"@typescript-eslint/eslint-plugin": "^5.40.0",
+		"@typescript-eslint/parser": "^5.40.0",
+		"commitizen": "^4.3.0",
+		"commitlint": "^19.5.0",
+		"cz-conventional-changelog": "^3.3.0",
+		"cz-customizable": "^7.2.1",
+		"eslint": "^8.25.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin,": "link:@typescript-eslint/eslint-plugin,",
+		"eslint-plugin-prettier": "^4.2.1",
+		"prettier": "^2.7.1"
+	}
+}
