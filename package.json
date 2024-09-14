@@ -18,6 +18,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin,": "link:@typescript-eslint/eslint-plugin,",
 		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "^2.7.1"
+		"prettier": "^2.7.1",
+		"rollup": "^4.21.3"
 	}
 }
