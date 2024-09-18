@@ -1,6 +1,6 @@
-import { jsx } from './src/jsx';
+import { jsxDEV } from './src/jsx';
 
 export default {
-	createElement: jsx,
+	createElement: jsxDEV,
 	version: '0.0.0'
 };
