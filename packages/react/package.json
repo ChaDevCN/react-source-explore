@@ -1,0 +1,9 @@
+{
+	"name": "react",
+	"description": "react公用方法",
+	"module": "index.js",
+	"author": "Charlie <charlie.l1u@outlook.com>",
+	"devDependencies": {
+		"shared":"workspace:*"
+	}
+}
