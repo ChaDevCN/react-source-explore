@@ -2,17 +2,17 @@ import { REACT_ELEMENT_TYPE } from 'shared/ReactSymboles';
 import type {
 	Type,
 	Key,
-	ReactElement,
+	ReactElementType,
 	Ref,
 	Props,
 	ElementType
 } from 'shared/ReactTypes';
-const createElement = function (
+const ReactElement = function (
 	type: Type,
 	key: Key,
 	ref: Ref,
 	props: Props
-): ReactElement {
+): ReactElementType {
 	const element = {
 		$$typeof: REACT_ELEMENT_TYPE,
 		type,
@@ -55,6 +55,6 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 			props.children = maybeChildren;
 		}
 	}
-	return createElement(type, key, ref, props);
+	return ReactElement(type, key, ref, props);
 };
 export const jsxDev = jsx;
