@@ -1,0 +1,10 @@
+{
+  "name": "react-reconciler",
+  "version": "1.0.0",
+  "description": "reconciler协调器",
+  "main": "index.js",
+  "author": "Charlie <charlie.l1u@outlook.com>",
+	"devDependencies": {
+		"shared":"workspace:*"
+	}
+}
