@@ -1,11 +1,36 @@
 import { beginWork } from './beginWork';
 import { completeWork } from './completeWork';
-import { FiberNode } from './fiber';
+import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber';
+import { HostRoot } from './workTags';
 
 // 正在工作的fiberNode
 let workInProgress: FiberNode | null = null;
 
-function renderRoot(root: FiberNode) {
+export function scheduleUpdateOnFiber(fiber: FiberNode) {
+	//  当前fiber 有可能不是根节点
+	//  因为dispatch 也会触发更新 不只是ReactDOM.createRoot().render
+	const root = markUpdateFromToRoot(fiber);
+	// 找到根节点 触发更新
+	renderRoot(root);
+}
+/**
+ * 找到根节点
+ * */
+function markUpdateFromToRoot(fiber: FiberNode) {
+	let node = fiber;
+	let parent = node.return;
+	while (parent !== null) {
+		// 非根节点 继续向上遍历
+		node = parent;
+		parent = node.return;
+	}
+	// 根节点
+	if (node.tag === HostRoot) {
+		return node.stateNode;
+	}
+	return null;
+}
+function renderRoot(root: FiberRootNode) {
 	prepareRefreshStack(root);
 
 	do {
@@ -13,7 +38,9 @@ function renderRoot(root: FiberNode) {
 			workLoop();
 			break;
 		} catch (error) {
-			console.log(`workLoop 发生错误 `, error);
+			if (__DEV__) {
+				console.warn(`workLoop 发生错误 `, error);
+			}
 			workInProgress = null;
 		}
 	} while (true);
@@ -24,8 +51,8 @@ function renderRoot(root: FiberNode) {
  *
  *  让 workInProgress 指向第一个工作的fiberNode
  **/
-function prepareRefreshStack(fiber: FiberNode) {
-	workInProgress = fiber;
+function prepareRefreshStack(root: FiberRootNode) {
+	workInProgress = createWorkInProgress(root.current, {});
 }
 
 function workLoop() {

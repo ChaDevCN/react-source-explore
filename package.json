@@ -3,7 +3,7 @@
 	"description": "react实现",
 	"scripts": {
 		"lint": "eslint --ext .ts,.jsx,.tsx --fix --quiet ./packages",
-		"dev:build":"rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/react.config.js"
+		"dev:build": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/react.config.js"
 	},
 	"author": "Charlie <charlie.l1u@outlook.com>",
 	"devDependencies": {
@@ -25,5 +25,8 @@
 		"rollup": "^4.21.3",
 		"rollup-plugin-generate-package-json": "^3.2.0",
 		"rollup-plugin-typescript2": "^0.36.0"
+	},
+	"dependencies": {
+		"@rollup/plugin-replace": "^5.0.7"
 	}
 }

@@ -19,6 +19,8 @@ export class FiberNode {
 	// 作为工作单元
 	pendingProps: Props; // 新的待处理属性
 	memoizedProps: Props | null; // 上一次渲染时的属性
+	menmoizeState: any;
+	updateQueue: unknown;
 
 	alternate: FiberNode | null; // 当前树 (current tree) 和 工作树 (workInProgress tree) 对应节点的建立.
 	flags: Flags;
@@ -39,6 +41,8 @@ export class FiberNode {
 		// 初始化工作单元属性
 		this.pendingProps = pendingProps;
 		this.memoizedProps = null;
+		this.updateQueue = null;
+		this.menmoizeState = null;
 
 		this.alternate = null;
 		// 副作用
@@ -46,14 +50,50 @@ export class FiberNode {
 	}
 }
 
+/**
+ *  整个应用的顶层节点
+ *  持有对 DOM 容器的引用
+ *  管理整个 Fiber 树的状态
+ *  FiberRootNode.current 指向 根FiberNode （tag 为 HostRoot）
+ *  根FiberNode（tag 为 HostRoot）的stateNode 指向 FiberRootNode
+ *
+ */
 export class FiberRootNode {
 	container: Container; //挂在节点 比如 getElementById(#app)
-	current: FiberNode;
-	finisheWork: FiberNode | null;
+	current: FiberNode; // 指向当前正在渲染或已渲染的fiber树的根节点
+	finishedWork: FiberNode | null; // 指向已完成工作（但还未提交到DOM）的新 Fiber 树的根节点
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container;
 		this.current = hostRootFiber;
-		hostRootFiber.stateNode = this;
-		this.finisheWork = null;
+		hostRootFiber.stateNode = this; // 建立 FiberRootNode 和 FiberNode 双向连接
+		this.finishedWork = null;
 	}
 }
+
+export const createWorkInProgress = (
+	current: FiberNode,
+	pendingProps: Props
+): FiberNode => {
+	let wip = current.alternate;
+
+	// 双缓存
+	if (wip === null) {
+		// 首屏 mount
+		wip = new FiberNode(current.tag, pendingProps, current.key);
+		wip.stateNode = current.stateNode;
+
+		wip.alternate = current;
+		wip.alternate = wip;
+	} else {
+		// update
+		wip.pendingProps = pendingProps;
+		wip.flags = NoFlags;
+	}
+	wip.type = current.type;
+	wip.updateQueue = current.updateQueue;
+	wip.child = current.child;
+	wip.menmoizeState = current.menmoizeState;
+	wip.memoizedProps = current.memoizedProps;
+
+	return wip;
+};
