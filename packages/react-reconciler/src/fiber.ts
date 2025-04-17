@@ -19,11 +19,12 @@ export class FiberNode {
 	// 作为工作单元
 	pendingProps: Props; // 新的待处理属性
 	memoizedProps: Props | null; // 上一次渲染时的属性
-	menmoizeState: any;
-	updateQueue: unknown;
+	menmoizeState: any; // 用来存储在上次渲染过程中最终获得的节点的`state`的
+	updateQueue: unknown; // 用来存储更新队列的
 
 	alternate: FiberNode | null; // 当前树 (current tree) 和 工作树 (workInProgress tree) 对应节点的建立.
-	flags: Flags;
+	flags: Flags; // 标识插入删除的标记
+	subtreeFlags: Flags; // 子树中存在的flags
 
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 初始化标识和关键属性
@@ -47,6 +48,7 @@ export class FiberNode {
 		this.alternate = null;
 		// 副作用
 		this.flags = NoFlags;
+		this.subtreeFlags = NoFlags;
 	}
 }
 

@@ -27,8 +27,9 @@ export const beginWork = (wip: FiberNode) => {
 			if (__DEV__) {
 				console.warn(`workInProgress为实现的类型`, wip.tag);
 			}
-			return;
+			break;
 	}
+	return null;
 };
 
 /**

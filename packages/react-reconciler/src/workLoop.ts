@@ -44,6 +44,11 @@ function renderRoot(root: FiberRootNode) {
 			workInProgress = null;
 		}
 	} while (true);
+
+	const finishedWork = root.current.alternate; // 获取上一次的fiberNode
+	root.finishedWork = finishedWork; // 将上一次的fiberNode 赋值给finishedWork
+
+	// commitRoot(root);
 }
 
 /**
@@ -62,7 +67,7 @@ function workLoop() {
 }
 function performUnitOfWork(fiber: FiberNode) {
 	const next = beginWork(fiber); // 子fiber 或者 null
-	next.memoizedProps = next.pendingProps;
+	fiber.memoizedProps = fiber.pendingProps; // 将fiber的pendingProps 赋值给memoizedProps
 
 	if (next === null) {
 		// 说明没有子 已经到最深处
