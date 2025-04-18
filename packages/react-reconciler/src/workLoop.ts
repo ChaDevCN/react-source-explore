@@ -1,6 +1,8 @@
 import { beginWork } from './beginWork';
 import { completeWork } from './completeWork';
 import { createWorkInProgress, FiberNode, FiberRootNode } from './fiber';
+import { MutationMask } from './fiberFlags';
+import { NoFlags } from './fiberFlags';
 import { HostRoot } from './workTags';
 
 // 正在工作的fiberNode
@@ -48,7 +50,7 @@ function renderRoot(root: FiberRootNode) {
 	const finishedWork = root.current.alternate; // 获取上一次的fiberNode
 	root.finishedWork = finishedWork; // 将上一次的fiberNode 赋值给finishedWork
 
-	// commitRoot(root);
+	commitRoot(root);
 }
 
 /**
@@ -93,4 +95,38 @@ function completeUnitOfWork(fiber: FiberNode) {
 		node = node.return;
 		workInProgress = node;
 	} while (node !== null);
+}
+
+/**
+ * commit 阶段所需要执行的方法
+ * @param root
+ * @returns
+ */
+function commitRoot(root: FiberRootNode) {
+	// 获取上一次的fiberNode
+	const finishedWork = root.finishedWork;
+
+	// 如果上一次的fiberNode 为空 则直接返回
+	if (finishedWork === null) {
+		return;
+	}
+
+	if (__DEV__) {
+		console.log('commit阶段开始,finishedWork: ', finishedWork);
+	}
+
+	// 将finishedWork 赋值为null 重置
+	root.finishedWork = null;
+	// 判断是否需要3个子阶段执行的操作
+	const subtreeHasEffect =
+		(finishedWork.subtreeFlags & MutationMask) !== NoFlags;
+	const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
+
+	if (subtreeHasEffect || rootHasEffect) {
+		// beforeMutation
+		// mutation Placement
+		root.current = finishedWork; // fiber树切换
+	} else {
+		root.current = finishedWork;
+	}
 }
