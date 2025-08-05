@@ -86,7 +86,7 @@ export const createWorkInProgress = (
 		console.log(wip);
 
 		wip.alternate = current;
-		wip.alternate = wip;
+		current.alternate = wip;
 	} else {
 		// update
 		wip.pendingProps = pendingProps;
