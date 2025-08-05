@@ -1,12 +1,15 @@
-import { REACT_ELEMENT_TYPE } from 'shared/ReactSymboles';
-import type {
+import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
+import {
 	Type,
 	Key,
-	ReactElementType,
 	Ref,
 	Props,
+	ReactElementType,
 	ElementType
 } from 'shared/ReactTypes';
+
+// ReactElement
+
 const ReactElement = function (
 	type: Type,
 	key: Key,
@@ -19,29 +22,40 @@ const ReactElement = function (
 		key,
 		ref,
 		props,
-		__mark: 'Charlie'
+		__mark: 'liuchang'
 	};
 	return element;
 };
 
-/**
- * jsx实现
- * @param {ElementType}
- * @param {config}
- * */
-export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
-	let key: any = null;
-	let ref: any = null;
-	const props: any = {};
+export function isValidElement(object: any) {
+	return (
+		typeof object === 'object' &&
+		object !== null &&
+		object.$$typeof === REACT_ELEMENT_TYPE
+	);
+}
+
+export const createElement = (
+	type: ElementType,
+	config: any,
+	...maybeChildren: any
+) => {
+	let key: Key = null;
+	const props: Props = {};
+	let ref: Ref = null;
 
 	for (const prop in config) {
 		const val = config[prop];
-		if (prop === 'key' && val !== undefined) {
-			key = val + '';
+		if (prop === 'key') {
+			if (val !== undefined) {
+				key = '' + val;
+			}
 			continue;
 		}
-		if (prop === 'ref' && val !== undefined) {
-			ref = val + '';
+		if (prop === 'ref') {
+			if (val !== undefined) {
+				ref = val;
+			}
 			continue;
 		}
 		if ({}.hasOwnProperty.call(config, prop)) {
@@ -56,6 +70,37 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 			props.children = maybeChildren;
 		}
 	}
+	return ReactElement(type, key, ref, props);
+};
+
+export const jsx = (type: ElementType, config: any, maybeKey: any) => {
+	let key: Key = null;
+	const props: Props = {};
+	let ref: Ref = null;
+
+	if (maybeKey !== undefined) {
+		key = '' + maybeKey;
+	}
+
+	for (const prop in config) {
+		const val = config[prop];
+		if (prop === 'key') {
+			if (val !== undefined) {
+				key = '' + val;
+			}
+			continue;
+		}
+		if (prop === 'ref') {
+			if (val !== undefined) {
+				ref = val;
+			}
+			continue;
+		}
+		if ({}.hasOwnProperty.call(config, prop)) {
+			props[prop] = val;
+		}
+	}
+
 	return ReactElement(type, key, ref, props);
 };
 

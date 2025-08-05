@@ -3,12 +3,14 @@
 	"description": "react实现",
 	"scripts": {
 		"lint": "eslint --ext .ts,.jsx,.tsx --fix --quiet ./packages",
-		"dev:build": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/react.config.js"
+		"dev:build": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js",
+		"demo":"vite serve demos/test-react-dom --config scripts/vite/vite.config.js --force"
 	},
 	"author": "Charlie <charlie.l1u@outlook.com>",
 	"devDependencies": {
 		"@commitlint/cli": "^19.5.0",
 		"@commitlint/config-conventional": "^19.5.0",
+		"@rollup/plugin-alias": "^5.1.1",
 		"@rollup/plugin-commonjs": "^26.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.40.0",
 		"@typescript-eslint/parser": "^5.40.0",
@@ -24,7 +26,10 @@
 		"rimraf": "^6.0.1",
 		"rollup": "^4.21.3",
 		"rollup-plugin-generate-package-json": "^3.2.0",
-		"rollup-plugin-typescript2": "^0.36.0"
+		"rollup-plugin-typescript2": "^0.36.0",
+		"vite": "^3.2.3",
+		"typescript": "^4.8.4",
+		"@vitejs/plugin-react": "^2.2.0"
 	},
 	"dependencies": {
 		"@rollup/plugin-replace": "^5.0.7"

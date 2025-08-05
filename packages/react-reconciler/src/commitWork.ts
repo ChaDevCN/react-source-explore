@@ -72,7 +72,9 @@ const commitPlacement = (finishedWork: FiberNode) => {
 	// 获取要插入的父节点
 	const hostParent = getHostParent(finishedWork);
 	// 执行插入
-	appendPlacementNodeIntoContainer(finishedWork, hostParent);
+	if (hostParent !== null) {
+		appendPlacementNodeIntoContainer(finishedWork, hostParent);
+	}
 };
 
 /**
@@ -80,7 +82,7 @@ const commitPlacement = (finishedWork: FiberNode) => {
  * @param fiber 当前 Fiber 节点，从它开始向上查找
  * @returns  返回一个真实 DOM 节点容器（可能是 DOM 元素或根节点的 container）
  */
-function getHostParent(fiber: FiberNode): Container {
+function getHostParent(fiber: FiberNode): Container | null {
 	let parent = fiber.return; // 向上查找父节点
 
 	while (parent) {
@@ -102,6 +104,7 @@ function getHostParent(fiber: FiberNode): Container {
 	if (__DEV__) {
 		console.warn('未找到hostParent');
 	}
+	return null;
 }
 
 /**

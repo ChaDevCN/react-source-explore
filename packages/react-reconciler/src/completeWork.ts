@@ -24,7 +24,8 @@ export const completeWork = (wip: FiberNode) => {
 				 *   1. 创建DOM节点
 				 * 	 2. 挂载子节点
 				 */
-				const instance = createInstance(wip.type, newProps);
+				// const instance = createInstance(wip.type, newProps);
+				const instance = createInstance(wip.type);
 				appendAllChild(instance, wip);
 				wip.stateNode = instance;
 			}
@@ -64,7 +65,7 @@ function appendAllChild(parent: Container, wip: FiberNode) {
 	while (node !== null) {
 		// 如果节点是HostText或HostComponent，则添加到父节点
 		if (node?.tag !== HostText && node?.tag !== HostComponent) {
-			appendInitialChild(parent, node);
+			appendInitialChild(parent, node?.stateNode);
 		} else if (node.child !== null) {
 			// 如果节点有子节点，则将子节点添加到父节点
 			node.child.return = node;
