@@ -120,7 +120,7 @@ function appendPlacementNodeIntoContainer(
 ) {
 	// 如果当前节点是原生 DOM 或文本节点，直接插入
 	if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-		appendChildToContainer(finishedWork.stateNode, hostParent);
+		appendChildToContainer(hostParent, finishedWork.stateNode);
 		return;
 	}
 	// 否则向下查找子节点，找到可插入的真实 DOM 节点
