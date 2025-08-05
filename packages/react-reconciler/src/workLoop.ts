@@ -113,7 +113,7 @@ function commitRoot(root: FiberRootNode) {
 	}
 
 	if (__DEV__) {
-		console.log('commit阶段开始,finishedWork: ', finishedWork);
+		console.warn('commit阶段开始,finishedWork: ', finishedWork);
 	}
 
 	// 将finishedWork 赋值为null 重置
@@ -122,7 +122,6 @@ function commitRoot(root: FiberRootNode) {
 	const subtreeHasEffect =
 		(finishedWork.subtreeFlags & MutationMask) !== NoFlags;
 	const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
-	console.log(subtreeHasEffect || rootHasEffect);
 
 	if (subtreeHasEffect || rootHasEffect) {
 		// beforeMutation
