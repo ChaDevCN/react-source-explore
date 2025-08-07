@@ -1,8 +1,14 @@
 import { ReactElementType } from 'shared/ReactTypes';
 import { FiberNode } from './fiber';
 import { processUpdateQueue, UpdateQueue } from './updateQueue';
-import { HostComponent, HostRoot, HostText } from './workTags';
+import {
+	FunctionComponent,
+	HostComponent,
+	HostRoot,
+	HostText
+} from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
+import { renderWithHooks } from './fiberHooks';
 
 /**
  * beginWork是递归构建Fiber树的核心函数
@@ -23,6 +29,8 @@ export const beginWork = (wip: FiberNode) => {
 			return updateHostComponent(wip);
 		case HostText:
 			return null;
+		case FunctionComponent:
+			return updateFuncitonComponent(wip);
 		default:
 			if (__DEV__) {
 				console.warn(`workInProgress为实现的类型`, wip.tag);
@@ -31,7 +39,18 @@ export const beginWork = (wip: FiberNode) => {
 	}
 	return null;
 };
+/**
+ *
+ * @param wip 当前工作的fiber
+ * @returns
+ */
+function updateFuncitonComponent(wip: FiberNode) {
+	const nextChildren = renderWithHooks(wip);
 
+	reconcileChildren(wip, nextChildren);
+
+	return wip.child;
+}
 /**
  * 更新HostRoot类型的Fiber节点
  * 执行顺序：
