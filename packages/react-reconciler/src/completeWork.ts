@@ -73,7 +73,7 @@ function appendAllChild(parent: Container, wip: FiberNode) {
 	// 遍历子节点
 	while (node !== null) {
 		// 如果节点是HostText或HostComponent，则添加到父节点
-		if (node.tag !== HostText && node.tag !== HostComponent) {
+		if (node.tag === HostText || node.tag === HostComponent) {
 			appendInitialChild(parent, node?.stateNode);
 		} else if (node.child !== null) {
 			// 如果节点有子节点，则将子节点添加到父节点
@@ -118,10 +118,10 @@ function bubbleProperties(wip: FiberNode) {
 		 * 		1010 | 0000 = 1010
 		 * 		1010 | 1010 = 1010
 		 *  将node.subtreeFlags 和 subtreeFlags 进行位或运算
-		 *  将node.subtreeFlags 的值赋值给 subtreeFlags
+		 *  将node.flags 和 node.subtreeFlags 的值赋值给 subtreeFlags
 		 */
 		subtreeFlags |= node.subtreeFlags;
-		node.subtreeFlags = subtreeFlags;
+		subtreeFlags |= node.flags;
 
 		node.return = wip; // 将node的父节点设置为wip
 		node = node.sibling; // 便利兄弟节点
