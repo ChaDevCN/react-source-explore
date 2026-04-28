@@ -2,13 +2,11 @@ import currentDispatcher, {
 	Dispatcher,
 	resloveDispatcher
 } from './src/currentDispatcher';
-import { jsxDEV } from './src/jsx';
+import { jsxDEV, isValidElement as isValidElementFn } from './src/jsx';
 
-export default {
-	createElement: jsxDEV,
-	version: '0.0.0'
-};
-
+export const version = '0.0.0';
+export const createElement = jsxDEV;
+export const isValidElement = isValidElementFn;
 export const useState: Dispatcher['useState'] = (initialState) => {
 	const dispatcher = resloveDispatcher();
 
