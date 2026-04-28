@@ -46,7 +46,6 @@ export const beginWork = (wip: FiberNode) => {
  */
 function updateFuncitonComponent(wip: FiberNode) {
 	const nextChildren = renderWithHooks(wip);
-
 	reconcileChildren(wip, nextChildren);
 
 	return wip.child;

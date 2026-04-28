@@ -22,7 +22,7 @@ export class FiberNode {
 	menmoizeState: any; // 用来存储在上次渲染过程中最终获得的节点的`state`的
 	updateQueue: unknown; // 用来存储更新队列的
 
-	alternate: FiberNode | null; // 当前树 (current tree) 和 工作树 (workInProgress tree) 对应节点的建立.
+	alternate: FiberNode | null; // 当前树 (current tree) 和 工作树 (workInProgress tree) 对应节点的建立. 上一次渲染的fiber
 	flags: Flags; // 标识插入删除的标记
 	subtreeFlags: Flags; // 子树中存在的flags
 

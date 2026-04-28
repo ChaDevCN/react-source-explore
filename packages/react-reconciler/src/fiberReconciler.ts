@@ -28,6 +28,7 @@ export function updateContainer(
 ) {
 	const hostRootFiber = root.current; // 获取当前 fiber 树的根节点
 	const update = createUpdate<ReactElementType | null>(element); // 创建一个新的更新，包含要渲染的元素
+
 	enqueueUpdate(
 		hostRootFiber.updateQueue as UpdateQueue<ReactElementType | null>,
 		update

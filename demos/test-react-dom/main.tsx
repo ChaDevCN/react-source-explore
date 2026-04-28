@@ -1,9 +1,11 @@
-import { StrictMode } from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 function APP() {
+	const [num, pdateNum] = useState(100);
+
 	return (
 		<div>
-			<span>hahah</span>
+			<span>{num}</span>
 		</div>
 	);
 }

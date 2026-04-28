@@ -5,6 +5,7 @@
  * 3. 将更新加入队列：通过 enqueueUpdate 函数将更新加入队列。
  * 4. 处理更新：通过 processUpdateQueue 函数处理队列中的更新，计算新的 state。
  */
+import { Dispatch } from 'react/src/currentDispatcher';
 import { Action } from 'shared/ReactTypes';
 
 export interface Update<State> {
@@ -15,6 +16,7 @@ export interface UpdateQueue<State> {
 	shared: {
 		pending: Update<State> | null; // 待处理的更新
 	};
+	dispatcher: Dispatch<State> | null;
 }
 /**
  * 创建一个新的更新
@@ -32,7 +34,8 @@ export const createUpdateQueue = <State>() => {
 	return {
 		shared: {
 			pending: null // 初始化时没有待处理的更新
-		}
+		},
+		dispatcher: null
 	} as UpdateQueue<State>;
 };
 
