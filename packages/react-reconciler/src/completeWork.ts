@@ -45,7 +45,6 @@ export const completeWork = (wip: FiberNode) => {
 				// update
 				const oldText = current.memoizedProps.content;
 				const newText = newProps.content;
-
 				if (oldText !== newText) {
 					markUpdate(wip);
 				}

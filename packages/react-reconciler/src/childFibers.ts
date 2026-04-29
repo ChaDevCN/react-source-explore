@@ -25,7 +25,7 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 			returnFiber.deletions = [childToDelete];
 			returnFiber.flags |= ChildDeletion;
 		} else {
-			returnFiber.deletions?.push(childToDelete);
+			deletions.push(childToDelete);
 		}
 	}
 	/**
@@ -35,7 +35,7 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 	 * @param element - 需要协调的React元素
 	 * @returns 返回新创建的Fiber节点
 	 */
-	function reconcilSingleELement(
+	function reconcileSingleElement(
 		returnFiber: FiberNode,
 		currentFiber: FiberNode | null,
 		element: ReactElementType
@@ -52,11 +52,10 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 						const exisiting = useFiber(currentFiber, element.props);
 						exisiting.return = returnFiber;
 						return exisiting;
-					} else {
-						// key相同 type不同 删掉所有旧的
-						deleteChild(returnFiber, currentFiber);
-						break work;
 					}
+					// key相同 type不同 删掉所有旧的
+					deleteChild(returnFiber, currentFiber);
+					break work;
 				} else {
 					if (__DEV__) {
 						console.warn(`还未实现的react类型：${element}`);
@@ -65,7 +64,6 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 			} else {
 				// key不同 删掉旧的
 				deleteChild(returnFiber, currentFiber);
-				break work;
 			}
 		}
 		// 根据React元素创建新的Fiber节点
@@ -87,6 +85,16 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 		currentFiber: FiberNode | null,
 		content: string | number
 	) {
+		if (currentFiber !== null) {
+			// update
+			if (currentFiber.tag === HostText) {
+				// 类型没变，可以复用
+				const existing = useFiber(currentFiber, { content });
+				existing.return = returnFiber;
+				return existing;
+			}
+			deleteChild(returnFiber, currentFiber);
+		}
 		// 创建文本类型的Fiber节点
 		const fiber = new FiberNode(HostText, { content }, null);
 		// 设置父级Fiber的引用
@@ -127,7 +135,7 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 				case REACT_ELEMENT_TYPE:
 					// 处理React元素类型
 					return placeSingleChild(
-						reconcilSingleELement(returnFiber, currentFiber, newChild)
+						reconcileSingleElement(returnFiber, currentFiber, newChild)
 					);
 				default:
 					if (__DEV__) {
