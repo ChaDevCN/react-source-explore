@@ -1,8 +1,12 @@
-import { ReactElementType } from 'shared/ReactTypes';
-import { createFiberFromELment, FiberNode } from './fiber';
+import { Props, ReactElementType } from 'shared/ReactTypes';
+import {
+	createFiberFromELment,
+	createWorkInProgress,
+	FiberNode
+} from './fiber';
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
 import { HostText } from './workTags';
-import { Placement } from './fiberFlags';
+import { ChildDeletion, Placement } from './fiberFlags';
 
 /**
  * 创建Child Reconciler（子节点协调器）
@@ -10,6 +14,20 @@ import { Placement } from './fiberFlags';
  * @returns 返回reconcilerChildFibers函数用于协调子节点
  */
 export function ChildReconciler(shouldTrackEffects: boolean) {
+	function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
+		if (!shouldTrackEffects) {
+			return;
+		}
+		const deletions = returnFiber.deletions;
+
+		if (deletions === null) {
+			// 首次添加需要删除的 子fiber
+			returnFiber.deletions = [childToDelete];
+			returnFiber.flags |= ChildDeletion;
+		} else {
+			returnFiber.deletions?.push(childToDelete);
+		}
+	}
 	/**
 	 * 协调单个React元素
 	 * @param returnFiber - 父级Fiber节点
@@ -22,6 +40,34 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 		currentFiber: FiberNode | null,
 		element: ReactElementType
 	) {
+		const key = element.key;
+
+		work: if (currentFiber !== null) {
+			// 根据key 和 type 做不同的处理
+			if (currentFiber?.key === key) {
+				// 判断是否react element
+				if (element.$$typeof === REACT_ELEMENT_TYPE) {
+					if (currentFiber.type === element.type) {
+						// type和key 都相同 进行复用
+						const exisiting = useFiber(currentFiber, element.props);
+						exisiting.return = returnFiber;
+						return exisiting;
+					} else {
+						// key相同 type不同 删掉所有旧的
+						deleteChild(returnFiber, currentFiber);
+						break work;
+					}
+				} else {
+					if (__DEV__) {
+						console.warn(`还未实现的react类型：${element}`);
+					}
+				}
+			} else {
+				// key不同 删掉旧的
+				deleteChild(returnFiber, currentFiber);
+				break work;
+			}
+		}
 		// 根据React元素创建新的Fiber节点
 		const fiber = createFiberFromELment(element);
 		// 设置父级Fiber的引用
@@ -98,8 +144,25 @@ export function ChildReconciler(shouldTrackEffects: boolean) {
 			);
 		}
 
+		// 兜底
+		if (currentFiber !== null) {
+			// 彻底删除
+			deleteChild(returnFiber, currentFiber);
+		}
+		if (__DEV__) {
+			console.warn('未实现的reconcile类型', newChild);
+		}
+
 		return null;
 	};
+}
+
+function useFiber(fiber: FiberNode, pendingProps: Props): FiberNode {
+	const clone = createWorkInProgress(fiber, pendingProps);
+
+	clone.index = 0;
+	clone.sibling = null;
+	return clone;
 }
 
 // 创建两个协调器实例：

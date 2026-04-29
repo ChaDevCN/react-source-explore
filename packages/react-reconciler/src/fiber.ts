@@ -25,6 +25,7 @@ export class FiberNode {
 	alternate: FiberNode | null; // 当前树 (current tree) 和 工作树 (workInProgress tree) 对应节点的建立. 上一次渲染的fiber
 	flags: Flags; // 标识插入删除的标记
 	subtreeFlags: Flags; // 子树中存在的flags
+	deletions: FiberNode[] | null;
 
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 初始化标识和关键属性
@@ -49,6 +50,7 @@ export class FiberNode {
 		// 副作用
 		this.flags = NoFlags;
 		this.subtreeFlags = NoFlags;
+		this.deletions = null;
 	}
 }
 
@@ -72,26 +74,44 @@ export class FiberRootNode {
 	}
 }
 
+/**
+ * 根据 current Fiber 创建或复用本轮 render 要使用的 workInProgress Fiber。
+ *
+ * 什么时候调用：
+ * - 当某个 Fiber 收到更新后，会从根节点开始进入 render/reconcile 流程。
+ * - render 阶段需要构建一棵新的 Fiber 树时，会针对 current 树上的节点调用这个函数。
+ * - 首次更新某个节点时，如果还没有 alternate，就创建一个新的 wip。
+ * - 后续更新同一个节点时，如果 alternate 已经存在，就复用旧的 wip。
+ *
+ * 作用：
+ * - 实现 Fiber 的“双缓存”结构：current 表示屏幕上已经提交的旧树，wip 表示本轮正在计算的新树。
+ * - 把 current 上可以复用的信息复制到 wip 上，例如 type、updateQueue、child、memoizedState。
+ * - 清理本轮 render 需要重新收集的副作用标记，例如 flags、subtreeFlags、deletions。
+ */
 export const createWorkInProgress = (
 	current: FiberNode,
 	pendingProps: Props
 ): FiberNode => {
+	// alternate 指向另一棵 Fiber 树中和 current 对应的节点。
+	// 如果 current 是旧树节点，那么 current.alternate 就是本轮可以使用的 wip 节点。
 	let wip = current.alternate;
 
-	// 双缓存
 	if (wip === null) {
-		// 首屏 mount
+		// 第一次为这个 current 创建对应的 wip，建立双缓存关系。
 		wip = new FiberNode(current.tag, pendingProps, current.key);
 		wip.stateNode = current.stateNode;
 
 		wip.alternate = current;
 		current.alternate = wip;
 	} else {
-		// update
+		// 已经存在 wip 时，直接复用它，并写入本轮 render 的新 props。
 		wip.pendingProps = pendingProps;
 		wip.flags = NoFlags;
 		wip.subtreeFlags = NoFlags;
+		wip.deletions = null;
 	}
+
+	// 这些字段来自 current，是本轮计算新结果时需要继承的基础信息。
 	wip.type = current.type;
 	wip.updateQueue = current.updateQueue;
 	wip.child = current.child;

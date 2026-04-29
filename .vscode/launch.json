@@ -10,8 +10,7 @@
 			"type": "pwa-msedge",
 			"url": "http://localhost:5173",
 			"webRoot": "${workspaceFolder}",
-			"runtimeExecutable": "stable",
-			"preLaunchTask": "pnpm: demo"
+			"preLaunchTask": "pnpm run demo"
 		}
 	]
 }
